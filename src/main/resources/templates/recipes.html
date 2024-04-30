@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receitas</title>
+</head>
+<body>
+<h1>Receitas</h1>
+<form id="searchForm">
+    <label for="query">Buscar receita por nome ou ingrediente:</label><br>
+    <input type="text" id="query" name="query" required><br>
+    <input type="submit" value="Buscar">
+</form>
+<div id="recipesList"></div>
+
+<script>
+    const searchForm = document.getElementById('searchForm');
+    const recipesList = document.getElementById('recipesList');
+
+    searchForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const query = searchForm.query.value;
+        loadRecipes(query);
+    });
+
+    function loadRecipes(query) {
+        fetch(`/recipes?query=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                recipesList.innerHTML = '';
+                data.forEach(recipe => {
+                    const recipeElement = document.createElement('div');
+                    recipeElement.innerHTML = `
+                            <h3>${recipe.name}</h3>
+                            <p><strong>Ingredientes:</strong> ${recipe.ingredients}</p>
+                            <p><strong>Instruções:</strong> ${recipe.instructions}</p>
+                            <hr>
+                        `;
+                    recipesList.appendChild(recipeElement);
+                });
+            })
+            .catch(error => console.error('Erro ao carregar receitas:', error));
+    }
+</script>
+</body>
+</html>
